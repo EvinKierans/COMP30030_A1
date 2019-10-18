@@ -17,8 +17,9 @@ public class PacMan {
 			front=-1;
 			back=-1;
 			queue = new int[numjunctions];
-			for (int i=0;i<numjunctions;i++)
-			queue[i]=-1;
+			for (int i=0;i<numjunctions;i++) {
+				queue[i]=-1;
+			}
 		}
 
 		public void enque(int junction) {
@@ -82,17 +83,14 @@ public class PacMan {
         int[] depth = new int[map.numjunctions];
         boolean[] visited = new boolean[map.numjunctions];
 
-
         //Reading input
         System.out.println("Enter the source:");
         source = reader.nextInt();
 		System.out.println("Enter the destination:");
 		destination = reader.nextInt();
-
-
         System.out.println("Route from "+source+" to "+destination);
 
-		Queue theQueue = new Queue(map.numjunctions);
+        Queue theQueue = new Queue(map.numjunctions);
 
         for (i = 0; i < map.numjunctions; i++) {
             parent[i] = -1;
@@ -108,48 +106,59 @@ public class PacMan {
 	    	} while (i != -1);
       	} else {
 	    	System.out.println("No route exists from source "+source+" to destination "+destination);
-	}
-
-
+		}
     }
 
     static boolean findRoute(Map map, int source, int dest, boolean[] visited, Queue theQueue, int[] parent, int[] depth) {
-		int neighbour, j, curr_junction;
+
+		int neighbour, j, curr_junction, max_depth = 0;
 		boolean dest_found = false;
 		int curr_depth;
 
-		// Add the source junction to the queue
-		theQueue.enque(source);
-		// Record the source as visited
-		visited[source]=true;
-		depth[source]=0;
-		// Keep searching until dest is found or the queue is empty
-		while (!dest_found && !theQueue.empty()) {
-			/* Get current junction from queue */
-			curr_junction = theQueue.deque();
-			curr_depth = depth[curr_junction];
-			/* Check if it is the destination */
-			dest_found = (curr_junction == dest);
+		while (!dest_found) {
+			for (int i = 0; i < map.numjunctions; i++) {
+				parent[i] = -1;
+				visited[i] = false;
+			}
 
-			if (!dest_found)
-			// Check four neighbours of current junction
-			for (j=0;j<4;j++) {
-				neighbour = map.neighbourhood[curr_junction*4+j];
-				if (neighbour != -1 && !visited[neighbour]) {
-					//Set parent of neighbour
-					parent[neighbour] = curr_junction;
+			// Add the source junction to the queue
+			theQueue.enque(source);
+			// Record the source as visited
+			visited[source] = true;
+			depth[source] = 0;
 
-					// Enqueue the neighbour
-					theQueue.enque(neighbour);
-					// Record the neighbour as visited
-					visited[neighbour]=true;
-					depth[neighbour] = curr_depth+1;
+			// Keep searching until dest is found or the queue is empty
+			while (!dest_found && !theQueue.empty()) {
+				/* Get current junction from queue */
+				curr_junction = theQueue.deque();
+				curr_depth = depth[curr_junction];
+				/* Check if it is the destination */
+				dest_found = (curr_junction == dest);
+
+				if (!dest_found && max_depth > curr_depth) {
+
+					// Check four neighbours of current junction
+					for (j = 0; j < 4; j++) {
+						neighbour = map.neighbourhood[curr_junction * 4 + j];
+
+						// If a neighbour is a valid move, and is not visited
+						if (neighbour != -1 && !visited[neighbour]) {
+							// Set parent of neighbour
+							parent[neighbour] = curr_junction;
+							// Enqueue the neighbour
+							theQueue.enque(neighbour);
+							// Record the neighbour as visited
+							visited[neighbour] = true;
+							depth[neighbour] = curr_depth + 1;
+						}
+					}
 				}
 			}
+			// Max depth increases while destination not found AND max_depth is more than the current depth
+			max_depth++;
 		}
 		return dest_found;
     }
-
 
     static Map readMap(String file) throws IOException {
 		int numjunctions,i;
