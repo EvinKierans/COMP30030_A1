@@ -7,8 +7,8 @@ import java.io.File;
  * @author nhurley
  */
 public class PacMan {
-    // class to do some simple queueing
-    static class Queue {
+	// class to do some simple queueing
+	static class Queue {
 		int front;
 		int back;
 		int[] queue;
@@ -47,11 +47,11 @@ public class PacMan {
 		}
 
 		public boolean empty() {
-	    	return front == -1;
+			return front == -1;
 		}
-    }
-    // class to store the map of the junctions and their connections
-    static class Map {
+	}
+	// class to store the map of the junctions and their connections
+	static class Map {
 		public int[] neighbourhood;
 		public int numjunctions;
 
@@ -59,11 +59,11 @@ public class PacMan {
 			numjunctions = numj;
 			neighbourhood = neigh;
 		}
-    }
+	}
 
-    public static void main(String[] args) {
-        int i;
-        int source, destination;
+	public static void main(String[] args) {
+		int i;
+		int source, destination;
 		Map map;
 		Scanner reader = new Scanner(System.in);  // Reading from System.in
 		String file;
@@ -72,44 +72,44 @@ public class PacMan {
 		System.out.println("Enter the Map File Name:");
 		file = reader.next();
 
-        try {
-	    	map = readMap(file);
-        } catch(IOException e) {
+		try {
+			map = readMap(file);
+		} catch(IOException e) {
 			System.out.println("Error in reading neighbourhood file");
 			return;
-	    }
+		}
 
 		int[] parent = new int[map.numjunctions];
-        int[] depth = new int[map.numjunctions];
-        boolean[] visited = new boolean[map.numjunctions];
+		int[] depth = new int[map.numjunctions];
+		boolean[] visited = new boolean[map.numjunctions];
 
-        //Reading input
-        System.out.println("Enter the source:");
-        source = reader.nextInt();
+		//Reading input
+		System.out.println("Enter the source:");
+		source = reader.nextInt();
 		System.out.println("Enter the destination:");
 		destination = reader.nextInt();
-        System.out.println("Route from "+source+" to "+destination);
+		System.out.println("Route from "+source+" to "+destination);
 
-        Queue theQueue = new Queue(map.numjunctions);
+		Queue theQueue = new Queue(map.numjunctions);
 
-        for (i = 0; i < map.numjunctions; i++) {
-            parent[i] = -1;
-            visited[i] = false;
-        }
+		for (i = 0; i < map.numjunctions; i++) {
+			parent[i] = -1;
+			visited[i] = false;
+		}
 
 		if (findRoute(map, source, destination, visited, theQueue, parent, depth)) {
-            // Print the route backwards from destination to source
-            i = destination;
-            do {
+			// Print the route backwards from destination to source
+			i = destination;
+			do {
 				System.out.println(i);
 				i = parent[i];
-	    	} while (i != -1);
-      	} else {
-	    	System.out.println("No route exists from source "+source+" to destination "+destination);
+			} while (i != -1);
+		} else {
+			System.out.println("No route exists from source "+source+" to destination "+destination);
 		}
-    }
+	}
 
-    static boolean findRoute(Map map, int source, int dest, boolean[] visited, Queue theQueue, int[] parent, int[] depth) {
+	static boolean findRoute(Map map, int source, int dest, boolean[] visited, Queue theQueue, int[] parent, int[] depth) {
 
 		int neighbour, j, curr_junction, max_depth = 0;
 		boolean dest_found = false;
@@ -142,7 +142,7 @@ public class PacMan {
 						neighbour = map.neighbourhood[curr_junction * 4 + j];
 
 						// If a neighbour is a valid move, and is not visited
-						if (neighbour != -1 && !visited[neighbour]) {
+						if (neighbour != -1 && (!visited[neighbour] || depth[neighbour] >= curr_depth + 1)) {
 							// Set parent of neighbour
 							parent[neighbour] = curr_junction;
 							// Enqueue the neighbour
@@ -158,26 +158,26 @@ public class PacMan {
 			max_depth++;
 		}
 		return dest_found;
-    }
+	}
 
-    static Map readMap(String file) throws IOException {
+	static Map readMap(String file) throws IOException {
 		int numjunctions,i;
 		// First get the number of junctions  and check
-     	// that it is not greater than the maximum size
-      	Scanner reader = new Scanner(new File(file));
+		// that it is not greater than the maximum size
+		Scanner reader = new Scanner(new File(file));
 		numjunctions = reader.nextInt();
 		int[] neighbourhood = new int[4*numjunctions];
 
 		// Next read the map into the neighbourhood array
 		for (i=0;i<numjunctions*4;i++) {
-	    	neighbourhood[i] = reader.nextInt();
+			neighbourhood[i] = reader.nextInt();
 
-	    	if (neighbourhood[i]>=numjunctions || neighbourhood[i]<-1){
+			if (neighbourhood[i]>=numjunctions || neighbourhood[i]<-1){
 				throw new IOException();
 			}
 		}
 		Map map = new Map(numjunctions, neighbourhood);
 		return map;
-    }
+	}
 }
 
