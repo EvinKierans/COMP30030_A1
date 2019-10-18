@@ -26,13 +26,11 @@ public class PacMan {
 			// making sure to update front if the queue
 			// was originally empty
 			queue[junction]=-1;
-			if (back != -1) {
-				queue[back] = junction;
+			if (back == -1) {
+				back = junction;
 			}
-			else {
-				front = junction;
-			}
-			back = junction;
+			queue[junction] = front;
+			front = junction;
 			return;
 		}
 
